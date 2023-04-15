@@ -1,0 +1,8 @@
+\section{Performance Optimizations and Further Benchmarking}
+In our analysis, we utilized the existing benchmark code for ECVRF, which was developed using the Criterion crate. Our focus was on optimizing the verification function, as it is a crucial component in a blockchain setting where it is performed multiple times by a large validator set.
+
+By generating flamegraphs for the verification benchmark, we were able to identify parts of the code that took the most time. The two multiscalar multiplication operations were the most time-consuming, followed by compressing public keys.
+
+To address these performance bottlenecks, we proposed using vartime multiscalar multiplication (L-02), which is faster than constant-time multiscalar multiplication, and caching public key compression (I-05). Our analysis indicates that implementing both L-02 and I-05 can improve performance by 27\%.
+
+We also suggested additional caching techniques in I-04 and I-06. However, further work is required to concretely benchmark the improvements offered by these techniques and determine whether their implementation is warranted. While we strongly recommend adopting L-02 and I-05 due to their demonstrated benefits, more research is needed for I-04 and I-06. A careful trade-off must be considered between code readability and performance gains before deciding to implement these optimizations.
