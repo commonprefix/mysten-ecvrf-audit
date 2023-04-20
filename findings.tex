@@ -8,8 +8,8 @@
     \item[\textbf{Affected Code:}] \href{https://github.com/MystenLabs/fastcrypto/blob/963205c6d0538fe548b8b10037cf87a53af6f424/fastcrypto/src/vrf.rs#L99}{fastcrypto/src/vrf.rs (line 99)}
     \item[\textbf{Summary:}] In the \lstinline{ecvrf_encode_to_curve} implementation, the \lstinline{expand_message} function applies the hash once before returning the expanded message. Additionally, the \lstinline{map_to_point} function applies the hash once again before calling the function \lstinline{from_uniform_bytes}. However, the \href{https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-16#name-hashing-to-ristretto255}{Hash-to-Curve RFC Appendix B} only hashes once before calling the \lstinline{from_uniform_bytes} function. This does not lead to security issues but is a deviation from the specification and has negative performance implications.
     \item[\textbf{Suggestion:}] We recommend using \lstinline{from_uniform_bytes} directly in the \lstinline{ecvrf_encode_to_curve} to avoid the additional hashing and potential compatibility issues with other designs.
-    \item[\textbf{Suggested Fix:}] \href{https://github.com/MystenLabs/fastcrypto/pull/543/commits/370694eeffed74a57c816758d472640e4011ae7e}{[370694]}
-    \item[\textbf{Status:}] Open
+    \item[\textbf{Suggested Fix:}] \href{https://github.com/MystenLabs/fastcrypto/pull/543/commits/370694eeffed74a57c816758d472640e4011ae7e}{[370694e]}
+    \item[\textbf{Status:}] Resolved \href{https://github.com/MystenLabs/fastcrypto/commit/84fd7c7428c5f59185aecc56a2e0a006e8e07de1}{[84fd7c7]}
 \end{itemize}
 
 \subsubsection*{M-02: Non-canonical ristretto scalar deserialization}
@@ -17,8 +17,8 @@
 \item[\textbf{Affected Code:}] \href{https://github.com/MystenLabs/fastcrypto/blob/963205c6d0538fe548b8b10037cf87a53af6f424/fastcrypto/src/groups/ristretto255.rs#L191}{fastcrypto/src/groups/ristretto255.rs (line 191)}
 \item[\textbf{Summary:}] The ristretto scalar deserialization differs from the one upstream as it does not enforce the value to be canonical (i.e., that the input is already reduced). In the context of ECVRF, this is not dangerous as the $s$ and $c$ components of the proof should \emph{not} be assumed unique. Proofs following the spec for nonce derivation are deterministic, but this cannot be checked or enforced by the verifier: an alternative prover can derive $k$ via other means with no clear avenue for detection (i.e they are not unique). In general use, however, it can enable multiple representations for elements that should be unique, making replay attack detection harder.
 \item[\textbf{Suggestion:}] Consider updating the ristretto scalar deserialization to use the upstream \lstinline{from_canonical_bytes function}.
-\item[\textbf{Suggested Fix:}] \href{https://github.com/MystenLabs/fastcrypto/pull/543/commits/ebcd7e1c8e6f0bbf48667f995017151a20289886}{[ebcd7e1c]}
-\item[\textbf{Status:}] Open
+\item[\textbf{Suggested Fix:}] \href{https://github.com/MystenLabs/fastcrypto/pull/543/commits/ebcd7e1c8e6f0bbf48667f995017151a20289886}{[ebcd7e1]}
+\item[\textbf{Status:}] Resolved \href{https://github.com/MystenLabs/fastcrypto/commit/d1fe3d670e2e4b756813b3c8cfc09711ede24b68}{[d1fe3d6]}
 \end{itemize}
 
 \subsection{Low}
@@ -41,7 +41,7 @@
 \item[\textbf{Summary:}] Multiscalar multiplication takes the most time during verification. The current implementation uses \lstinline{RistrettoPoint::multiscalar_mul} to ensure a constant runtime to avoid leaking information. However, the upstream \lstinline{RistrettoPoint} also allows for \lstinline{vartime_multiscalar_mul}, which is faster but does not run in constant time. \lstinline{vartime_multiscalar_mul} can be used for the verification side, where no private information can be leaked.
 \item[\textbf{Suggestion:}] Consider using \lstinline{vartime_multiscalar_mul} for the verification side to improve performance without risking the leakage of private information.
 \item[\textbf{Suggested Fix:}] \href{https://github.com/MystenLabs/fastcrypto/pull/543/commits/53e16c8f82d63a84cdc842d93fc5c26cebbe109b}{[53e16c]}
-\item[\textbf{Status:}] Open
+\item[\textbf{Status:}] Resolved \href{https://github.com/MystenLabs/fastcrypto/commit/c3b24fb38d00b54e9337687d9086e913e636d40b}{[c3b24fb]}
 \end{itemize}
 
 \subsection{Informational}
