@@ -3,7 +3,7 @@
     None Found.
 \subsection{Medium}
 
-\subsubsection*{M01: Extra hashing in \lstinline{ecvrf_encode_to_curve}}
+\subsubsection*{M-01: Extra hashing in \lstinline{ecvrf_encode_to_curve}}
 \begin{itemize}[align=left]
     \item[\textbf{Affected Code:}] \href{https://github.com/MystenLabs/fastcrypto/blob/963205c6d0538fe548b8b10037cf87a53af6f424/fastcrypto/src/vrf.rs#L99}{fastcrypto/src/vrf.rs (line 99)}
     \item[\textbf{Summary:}] In the \lstinline{ecvrf_encode_to_curve} implementation, the \lstinline{expand_message} function applies the hash once before returning the expanded message. Additionally, the \lstinline{map_to_point} function applies the hash once again before calling the function \lstinline{from_uniform_bytes}. However, the \href{https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-16#name-hashing-to-ristretto255}{Hash-to-Curve RFC Appendix B} only hashes once before calling the \lstinline{from_uniform_bytes} function. This does not lead to security issues but is a deviation from the specification and has negative performance implications.
